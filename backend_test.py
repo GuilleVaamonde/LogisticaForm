@@ -457,23 +457,46 @@ class EnviosAPITester:
         )
 
 def main():
-    print("🚀 Starting Uruguay Shipping Form API Tests")
+    print("🚀 Starting Uruguay Shipping System API Tests")
     print("=" * 60)
     
     tester = EnviosAPITester()
     
-    # Test basic endpoints
+    # Test basic endpoints (no auth required)
     tester.test_root_endpoint()
     tester.test_departamentos()
     tester.test_motivos()
     
-    # Test CRUD operations
-    success, envio_data = tester.test_create_envio()
-    envio_id = envio_data.get("id") if success else None
+    # Test authentication
+    login_success, login_data = tester.test_login()
+    if not login_success:
+        print("❌ Login failed - cannot continue with authenticated tests")
+        return 1
+    
+    # Test user management (admin only)
+    tester.test_get_me()
+    user_success, user_data = tester.test_create_user()
+    tester.test_get_users()
+    
+    # Test envio CRUD operations
+    envio_success, envio_data = tester.test_create_envio()
+    envio_id = envio_data.get("id") if envio_success else None
     
     tester.test_get_envios()
     tester.test_get_envios_count()
     tester.test_get_single_envio(envio_id)
+    
+    # Test state transitions (core functionality)
+    if envio_id:
+        # Test valid transitions
+        tester.test_change_estado_to_asignado(envio_id)
+        tester.test_change_estado_to_entregado(envio_id)
+        
+        # Test invalid transition
+        tester.test_invalid_estado_transition(envio_id)
+    
+    # Test WhatsApp message logs
+    tester.test_get_message_logs()
     
     # Test Excel exports
     tester.test_export_single_excel(envio_id)
@@ -482,7 +505,15 @@ def main():
     # Test validation
     tester.test_validation_errors()
     
-    # Clean up - delete test envio
+    # Clean up - delete test user and envio
+    if hasattr(tester, 'test_user_id'):
+        tester.run_test(
+            "Delete Test User",
+            "DELETE",
+            f"users/{tester.test_user_id}",
+            200
+        )
+    
     if envio_id:
         tester.test_delete_envio(envio_id)
     
