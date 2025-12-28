@@ -89,7 +89,8 @@ class EnviosAPITester:
             "GET",
             "",
             200,
-            check_response=lambda r: "message" in r
+            check_response=lambda r: "message" in r,
+            auth_required=False
         )
 
     def test_departamentos(self):
