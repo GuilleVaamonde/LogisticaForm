@@ -113,7 +113,8 @@ class EnviosAPITester:
             "GET",
             "departamentos",
             200,
-            check_response=check_departamentos
+            check_response=check_departamentos,
+            auth_required=False
         )
 
     def test_motivos(self):
