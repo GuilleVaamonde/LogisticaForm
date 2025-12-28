@@ -1,0 +1,140 @@
+{
+  "identity": {
+    "name": "E1",
+    "archetype": "Swiss Logistics Control",
+    "vibe": "Precision, Urgency, Clarity, Industrial",
+    "principles": [
+      "Fusion: Swiss Poster Art x Digital Logistics",
+      "Emotion: Trust through Precision",
+      "Content: Data is the Hero",
+      "Zoom In: Focus on the Input",
+      "Negative Space: Breathing Room for Data",
+      "Contrast: Signal Red vs. Sterile White"
+    ]
+  },
+  "typography": {
+    "font_family": {
+      "headings": "Chivo, sans-serif",
+      "body": "Manrope, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "weights": {
+      "headings": "font-bold",
+      "subheadings": "font-semibold",
+      "body": "font-normal"
+    },
+    "sizes": {
+      "h1": "text-4xl md:text-5xl tracking-tight",
+      "h2": "text-2xl md:text-3xl tracking-tight",
+      "h3": "text-xl font-medium tracking-normal",
+      "body": "text-sm md:text-base leading-relaxed",
+      "caption": "text-xs text-muted-foreground uppercase tracking-wider"
+    },
+    "installation": "import '@fontsource/chivo'; import '@fontsource/manrope'; import '@fontsource/jetbrains-mono';"
+  },
+  "colors": {
+    "palette": {
+      "primary": {
+        "DEFAULT": "#C91A25",
+        "foreground": "#FFFFFF",
+        "hover": "#A6151E"
+      },
+      "secondary": {
+        "DEFAULT": "#F1F5F9",
+        "foreground": "#0F172A"
+      },
+      "background": "#FFFFFF",
+      "surface": "#F8F9FA",
+      "border": "#E2E8F0",
+      "muted": "#64748B",
+      "success": "#10B981",
+      "warning": "#F59E0B",
+      "error": "#EF4444"
+    },
+    "usage": {
+      "primary_action": "bg-primary text-primary-foreground hover:bg-primary/90",
+      "secondary_action": "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+      "surface_card": "bg-white border border-border",
+      "text_main": "text-slate-900",
+      "text_muted": "text-slate-500"
+    }
+  },
+  "layout": {
+    "grid_system": "The Manifest Grid",
+    "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "spacing": {
+      "section_gap": "py-12 md:py-16",
+      "component_gap": "gap-6 md:gap-8",
+      "internal_padding": "p-6 md:p-8"
+    },
+    "structure": {
+      "desktop": "grid grid-cols-12 gap-8",
+      "mobile": "flex flex-col gap-6"
+    }
+  },
+  "components": {
+    "buttons": {
+      "style": "rounded-sm font-medium tracking-wide transition-all active:scale-95",
+      "variants": {
+        "default": "bg-[#C91A25] text-white hover:bg-[#A6151E] shadow-sm",
+        "outline": "border-2 border-slate-200 bg-transparent hover:bg-slate-50 text-slate-900",
+        "ghost": "hover:bg-slate-100 text-slate-600"
+      }
+    },
+    "inputs": {
+      "style": "rounded-sm border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#C91A25]/20 focus:border-[#C91A25] transition-all font-medium placeholder:text-slate-400",
+      "label": "text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5 block"
+    },
+    "cards": {
+      "style": "bg-white border border-slate-200 rounded-sm shadow-none hover:border-slate-300 transition-colors",
+      "header": "border-b border-slate-100 p-4 bg-slate-50/50"
+    },
+    "table": {
+      "style": "w-full text-sm text-left",
+      "header": "bg-slate-50 text-slate-500 font-bold uppercase tracking-wider text-xs py-3 px-4",
+      "row": "border-b border-slate-100 hover:bg-slate-50/50 transition-colors",
+      "cell": "py-3 px-4 font-medium text-slate-700"
+    }
+  },
+  "visual_enhancers": {
+    "textures": "Subtle noise overlay on background (opacity 0.02)",
+    "shadows": "shadow-sm (minimalist), shadow-xl (modals only)",
+    "borders": "1px solid #E2E8F0 (Crisp, Technical)",
+    "radius": "rounded-sm (2px) or rounded-md (4px) - Avoid large rounded corners"
+  },
+  "assets": {
+    "icons": "Lucide React (Stroke width 1.5px for elegance)",
+    "images": [
+      {
+        "url": "https://images.unsplash.com/photo-1557761469-f29c6e201784?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "description": "Minimalist white architectural abstract - Use for login background or subtle texture",
+        "category": "background"
+      }
+    ]
+  },
+  "motion": {
+    "transitions": "transition-all duration-200 ease-out",
+    "hover_effects": "translate-y-[-1px]",
+    "loading": "Pulse effect on skeletons, Spinner for actions"
+  },
+  "accessibility": {
+    "contrast": "Ensure 4.5:1 for normal text. Use Slate-900 for main text.",
+    "focus_states": "Visible focus ring with offset",
+    "aria": "Labels for all inputs, roles for custom widgets"
+  },
+  "universal_guidelines": [
+    "DO NOT use gradients for backgrounds. Stick to solid colors or subtle textures.",
+    "DO NOT center align the main app container. Use left alignment for data density.",
+    "Use 2-3x more spacing than typical designs. 'p-8' is the new 'p-4'.",
+    "Every interactive element MUST have a 'data-testid' attribute (kebab-case).",
+    "Use 'sonner' for toast notifications.",
+    "Use 'lucide-react' for icons.",
+    "Components MUST use named exports.",
+    "Pages MUST use default exports.",
+    "Use Shadcn UI components but customize them to match the 'Swiss Logistics' aesthetic (remove rounded-xl, use rounded-sm).",
+    "For the 'Department' field, use a Shadcn Select component with the 19 departments of Uruguay.",
+    "For 'Ticket', use a read-only input or auto-generated display in JetBrains Mono.",
+    "Date/Time must be auto-captured on save, but displayed in the 'Recent Records' table."
+  ],
+  "instructions_to_main_agent": "You are building a high-precision logistics form. The user wants 'Simple and Professional'. Interpret this as 'Swiss International Style'. Use the defined Red (#C91A25) sparingly for primary actions and alerts. The rest should be monochrome. The form should feel like a physical manifest. Use the 'Recent Records' section to show the last 5-10 entries in a dense, easy-to-scan table. Ensure the Excel export functionality is prominent but not distracting."
+}
