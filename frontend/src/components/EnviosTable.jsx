@@ -7,10 +7,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Download, Trash2, MapPin, Phone } from "lucide-react";
+import { Download, Trash2, MapPin, Phone, Clock } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-export const EnviosTable = ({ envios, loading, onDelete, onExport }) => {
+export const EnviosTable = ({ envios, loading, onDelete, onExport, showActions = true }) => {
   const formatDate = (isoString) => {
     const date = new Date(isoString);
     return new Intl.DateTimeFormat('es-UY', {
@@ -30,6 +30,19 @@ export const EnviosTable = ({ envios, loading, onDelete, onExport }) => {
         return 'bg-amber-50 text-amber-700 border-amber-200';
       case 'Retiro y Entrega':
         return 'bg-purple-50 text-purple-700 border-purple-200';
+      default:
+        return 'bg-slate-50 text-slate-700 border-slate-200';
+    }
+  };
+
+  const getEstadoColor = (estado) => {
+    switch (estado) {
+      case 'Ingresada':
+        return 'bg-slate-100 text-slate-700 border-slate-200';
+      case 'Asignado a courier':
+        return 'bg-amber-50 text-amber-700 border-amber-200';
+      case 'Entregado':
+        return 'bg-emerald-50 text-emerald-700 border-emerald-200';
       default:
         return 'bg-slate-50 text-slate-700 border-slate-200';
     }
@@ -66,7 +79,7 @@ export const EnviosTable = ({ envios, loading, onDelete, onExport }) => {
               Ticket
             </TableHead>
             <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 py-3">
-              Fecha
+              Estado
             </TableHead>
             <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 py-3">
               Contacto
@@ -77,9 +90,11 @@ export const EnviosTable = ({ envios, loading, onDelete, onExport }) => {
             <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 py-3 hidden lg:table-cell">
               Motivo
             </TableHead>
-            <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 py-3 text-right">
-              Acciones
-            </TableHead>
+            {showActions && (
+              <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 py-3 text-right">
+                Acciones
+              </TableHead>
+            )}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -93,10 +108,14 @@ export const EnviosTable = ({ envios, loading, onDelete, onExport }) => {
                 <span className="font-mono font-semibold text-sm text-slate-900 ticket-display">
                   {envio.ticket}
                 </span>
+                <div className="flex items-center gap-1 mt-0.5">
+                  <Clock className="w-3 h-3 text-slate-400" strokeWidth={1.5} />
+                  <span className="text-xs text-slate-500">{formatDate(envio.fecha_carga)}</span>
+                </div>
               </TableCell>
               <TableCell className="py-3">
-                <span className="text-sm text-slate-600">
-                  {formatDate(envio.fecha_carga)}
+                <span className={`inline-flex items-center px-2 py-1 text-xs font-medium border rounded-sm ${getEstadoColor(envio.estado)}`}>
+                  {envio.estado}
                 </span>
               </TableCell>
               <TableCell className="py-3">
@@ -122,30 +141,32 @@ export const EnviosTable = ({ envios, loading, onDelete, onExport }) => {
                   {envio.motivo}
                 </span>
               </TableCell>
-              <TableCell className="py-3 text-right">
-                <div className="flex items-center justify-end gap-1">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onExport(envio.id, envio.ticket)}
-                    className="h-8 w-8 p-0 hover:bg-slate-100"
-                    title="Descargar Excel"
-                    data-testid={`export-btn-${envio.id}`}
-                  >
-                    <Download className="w-4 h-4 text-slate-500" strokeWidth={1.5} />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onDelete(envio.id)}
-                    className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
-                    title="Eliminar"
-                    data-testid={`delete-btn-${envio.id}`}
-                  >
-                    <Trash2 className="w-4 h-4" strokeWidth={1.5} />
-                  </Button>
-                </div>
-              </TableCell>
+              {showActions && (
+                <TableCell className="py-3 text-right">
+                  <div className="flex items-center justify-end gap-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onExport(envio.id, envio.ticket)}
+                      className="h-8 w-8 p-0 hover:bg-slate-100"
+                      title="Descargar Excel"
+                      data-testid={`export-btn-${envio.id}`}
+                    >
+                      <Download className="w-4 h-4 text-slate-500" strokeWidth={1.5} />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onDelete(envio.id)}
+                      className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
+                      title="Eliminar"
+                      data-testid={`delete-btn-${envio.id}`}
+                    >
+                      <Trash2 className="w-4 h-4" strokeWidth={1.5} />
+                    </Button>
+                  </div>
+                </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>
