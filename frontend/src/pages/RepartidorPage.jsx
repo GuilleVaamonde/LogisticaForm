@@ -1,0 +1,470 @@
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
+import { AppHeader } from "@/components/AppHeader";
+import { EnvioFilters } from "@/components/EnvioFilters";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Bike, Filter, PackageCheck, Truck, Loader2, MapPin, Phone, Clock } from "lucide-react";
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
+
+export default function RepartidorPage() {
+  const { user } = useAuth();
+  const [envios, setEnvios] = useState([]);
+  const [departamentos, setDepartamentos] = useState([]);
+  const [motivos, setMotivos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    departamento: "",
+    motivo: "",
+    estado: "",
+    fecha_desde: "",
+    fecha_hasta: ""
+  });
+  
+  // Modal state
+  const [showModal, setShowModal] = useState(false);
+  const [selectedEnvio, setSelectedEnvio] = useState(null);
+  const [modalAction, setModalAction] = useState(null); // "asignar" or "entregar"
+  const [receptorData, setReceptorData] = useState({ nombre: "", cedula: "" });
+  const [submitting, setSubmitting] = useState(false);
+
+  const buildQueryString = (params) => {
+    const query = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value) query.append(key, value);
+    });
+    return query.toString();
+  };
+
+  const fetchEnvios = async (filterParams = filters) => {
+    try {
+      const queryString = buildQueryString(filterParams);
+      const response = await axios.get(`${API}/envios?limit=50${queryString ? '&' + queryString : ''}`);
+      setEnvios(response.data);
+    } catch (error) {
+      console.error("Error fetching envios:", error);
+      toast.error("Error al cargar los envíos");
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [depRes, motivosRes] = await Promise.all([
+          axios.get(`${API}/departamentos`),
+          axios.get(`${API}/motivos`)
+        ]);
+        
+        setDepartamentos(depRes.data.departamentos);
+        setMotivos(motivosRes.data.motivos);
+        await fetchEnvios();
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast.error("Error al cargar los datos");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters);
+    fetchEnvios(newFilters);
+  };
+
+  const handleClearFilters = () => {
+    const emptyFilters = {
+      departamento: "",
+      motivo: "",
+      estado: "",
+      fecha_desde: "",
+      fecha_hasta: ""
+    };
+    setFilters(emptyFilters);
+    fetchEnvios(emptyFilters);
+  };
+
+  const openAsignarModal = (envio) => {
+    setSelectedEnvio(envio);
+    setModalAction("asignar");
+    setShowModal(true);
+  };
+
+  const openEntregarModal = (envio) => {
+    setSelectedEnvio(envio);
+    setModalAction("entregar");
+    setReceptorData({ nombre: "", cedula: "" });
+    setShowModal(true);
+  };
+
+  const handleCambiarEstado = async () => {
+    if (!selectedEnvio) return;
+
+    if (modalAction === "entregar") {
+      if (!receptorData.nombre.trim() || !receptorData.cedula.trim()) {
+        toast.error("Complete nombre y cédula del receptor");
+        return;
+      }
+    }
+
+    setSubmitting(true);
+    try {
+      const nuevoEstado = modalAction === "asignar" ? "Asignado a courier" : "Entregado";
+      
+      const payload = {
+        nuevo_estado: nuevoEstado,
+        ...(modalAction === "entregar" && {
+          receptor_nombre: receptorData.nombre,
+          receptor_cedula: receptorData.cedula
+        })
+      };
+
+      const response = await axios.patch(`${API}/envios/${selectedEnvio.id}/estado`, payload);
+      
+      // Update local state
+      setEnvios(prev => prev.map(e => 
+        e.id === selectedEnvio.id ? response.data : e
+      ));
+
+      const message = modalAction === "asignar" 
+        ? "Envío asignado. Se notificará al cliente por WhatsApp."
+        : "Envío entregado. Se notificará al cliente por WhatsApp.";
+      
+      toast.success(message);
+      setShowModal(false);
+      setSelectedEnvio(null);
+      setReceptorData({ nombre: "", cedula: "" });
+    } catch (error) {
+      console.error("Error changing status:", error);
+      const message = error.response?.data?.detail || "Error al cambiar estado";
+      toast.error(message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const getEstadoColor = (estado) => {
+    switch (estado) {
+      case "Ingresada":
+        return "bg-slate-100 text-slate-700 border-slate-200";
+      case "Asignado a courier":
+        return "bg-amber-50 text-amber-700 border-amber-200";
+      case "Entregado":
+        return "bg-emerald-50 text-emerald-700 border-emerald-200";
+      default:
+        return "bg-slate-50 text-slate-700 border-slate-200";
+    }
+  };
+
+  const formatDate = (isoString) => {
+    const date = new Date(isoString);
+    return new Intl.DateTimeFormat('es-UY', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(date);
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50" data-testid="repartidor-page">
+      <AppHeader />
+      
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="bg-white border border-slate-200 rounded-sm">
+          <div className="h-1 bg-[#C91A25]"></div>
+          
+          <div className="border-b border-slate-100 p-6 bg-slate-50/50">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-[#C91A25] rounded-sm flex items-center justify-center">
+                  <Bike className="w-5 h-5 text-white" strokeWidth={1.5} />
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+                    Panel de Repartidor
+                  </h1>
+                  <p className="text-xs text-slate-500 uppercase tracking-wider">
+                    Bienvenido, {user?.nombre}
+                  </p>
+                </div>
+              </div>
+              
+              <Button
+                onClick={() => setShowFilters(!showFilters)}
+                variant="outline"
+                className="rounded-sm border-slate-200 hover:bg-slate-100"
+                data-testid="toggle-filters-btn"
+              >
+                <Filter className="w-4 h-4 mr-2" strokeWidth={1.5} />
+                Filtros
+              </Button>
+            </div>
+            
+            {showFilters && (
+              <EnvioFilters
+                filters={filters}
+                departamentos={departamentos}
+                motivos={motivos}
+                onChange={handleFilterChange}
+                onClear={handleClearFilters}
+              />
+            )}
+          </div>
+
+          <div className="p-4 md:p-6">
+            {loading ? (
+              <div className="text-center py-12 text-slate-500">Cargando...</div>
+            ) : envios.length === 0 ? (
+              <div className="text-center py-12">
+                <MapPin className="w-12 h-12 mx-auto text-slate-300 mb-4" strokeWidth={1} />
+                <p className="text-slate-500 font-medium">No hay envíos</p>
+                <p className="text-sm text-slate-400 mt-1">
+                  Ajuste los filtros para ver más resultados
+                </p>
+              </div>
+            ) : (
+              <ScrollArea className="h-[600px]">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-slate-50 hover:bg-slate-50">
+                      <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                        Ticket
+                      </TableHead>
+                      <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                        Estado
+                      </TableHead>
+                      <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                        Destino
+                      </TableHead>
+                      <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 hidden md:table-cell">
+                        Contacto
+                      </TableHead>
+                      <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 hidden lg:table-cell">
+                        Motivo
+                      </TableHead>
+                      <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 text-right">
+                        Acciones
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {envios.map((envio) => (
+                      <TableRow 
+                        key={envio.id} 
+                        className="border-b border-slate-100"
+                        data-testid={`envio-row-${envio.id}`}
+                      >
+                        <TableCell>
+                          <span className="font-mono font-semibold text-sm text-slate-900">
+                            {envio.ticket}
+                          </span>
+                          <div className="flex items-center gap-1 mt-0.5">
+                            <Clock className="w-3 h-3 text-slate-400" strokeWidth={1.5} />
+                            <span className="text-xs text-slate-500">
+                              {formatDate(envio.fecha_carga)}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <span className={`inline-flex px-2 py-1 text-xs font-medium border rounded-sm ${getEstadoColor(envio.estado)}`}>
+                            {envio.estado}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            <p className="text-sm text-slate-700 font-medium">
+                              {envio.calle} {envio.numero}
+                              {envio.apto && `, ${envio.apto}`}
+                            </p>
+                            <p className="text-xs text-slate-500">{envio.departamento}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell">
+                          <div>
+                            <p className="text-sm text-slate-700">{envio.contacto}</p>
+                            <div className="flex items-center gap-1 mt-0.5">
+                              <Phone className="w-3 h-3 text-slate-400" strokeWidth={1.5} />
+                              <span className="text-xs text-slate-500">{envio.telefono}</span>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="hidden lg:table-cell">
+                          <span className="text-sm text-slate-600">{envio.motivo}</span>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            {envio.estado === "Ingresada" && (
+                              <Button
+                                size="sm"
+                                onClick={() => openAsignarModal(envio)}
+                                className="rounded-sm bg-amber-500 hover:bg-amber-600 text-white"
+                                data-testid={`asignar-btn-${envio.id}`}
+                              >
+                                <Truck className="w-4 h-4 mr-1" strokeWidth={1.5} />
+                                Retirar
+                              </Button>
+                            )}
+                            {envio.estado === "Asignado a courier" && (
+                              <Button
+                                size="sm"
+                                onClick={() => openEntregarModal(envio)}
+                                className="rounded-sm bg-emerald-500 hover:bg-emerald-600 text-white"
+                                data-testid={`entregar-btn-${envio.id}`}
+                              >
+                                <PackageCheck className="w-4 h-4 mr-1" strokeWidth={1.5} />
+                                Entregar
+                              </Button>
+                            )}
+                            {envio.estado === "Entregado" && (
+                              <span className="text-xs text-emerald-600 font-medium">
+                                ✓ Completado
+                              </span>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </ScrollArea>
+            )}
+          </div>
+        </div>
+      </main>
+
+      {/* Estado Change Modal */}
+      <Dialog open={showModal} onOpenChange={setShowModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-slate-900">
+              {modalAction === "asignar" ? "Confirmar Retiro" : "Confirmar Entrega"}
+            </DialogTitle>
+            <DialogDescription className="text-sm text-slate-500">
+              {selectedEnvio && (
+                <>Ticket: <span className="font-mono font-semibold">{selectedEnvio.ticket}</span></>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedEnvio && (
+            <div className="space-y-4">
+              <div className="bg-slate-50 p-4 rounded-sm border border-slate-200">
+                <p className="text-sm font-medium text-slate-700">
+                  {selectedEnvio.calle} {selectedEnvio.numero}
+                  {selectedEnvio.apto && `, ${selectedEnvio.apto}`}
+                </p>
+                <p className="text-xs text-slate-500 mt-1">{selectedEnvio.departamento}</p>
+                <div className="flex items-center gap-4 mt-2 pt-2 border-t border-slate-200">
+                  <span className="text-xs text-slate-600">{selectedEnvio.contacto}</span>
+                  <span className="text-xs text-slate-500">{selectedEnvio.telefono}</span>
+                </div>
+              </div>
+
+              {modalAction === "asignar" && (
+                <p className="text-sm text-slate-600">
+                  Al confirmar, el cliente recibirá un mensaje: 
+                  <span className="italic text-slate-500 block mt-1">
+                    "Tu pedido fue asignado a un cadete"
+                  </span>
+                </p>
+              )}
+
+              {modalAction === "entregar" && (
+                <>
+                  <p className="text-sm text-slate-600 mb-4">
+                    Complete los datos de quien recibe el paquete:
+                  </p>
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5 block">
+                        Nombre del Receptor *
+                      </Label>
+                      <Input
+                        data-testid="receptor-nombre"
+                        value={receptorData.nombre}
+                        onChange={(e) => setReceptorData(prev => ({ ...prev, nombre: e.target.value }))}
+                        placeholder="Nombre completo"
+                        className="rounded-sm"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5 block">
+                        Cédula de Identidad *
+                      </Label>
+                      <Input
+                        data-testid="receptor-cedula"
+                        value={receptorData.cedula}
+                        onChange={(e) => setReceptorData(prev => ({ ...prev, cedula: e.target.value }))}
+                        placeholder="1.234.567-8"
+                        className="rounded-sm"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-sm text-slate-600 mt-4">
+                    Al confirmar, el cliente recibirá:
+                    <span className="italic text-slate-500 block mt-1">
+                      "Tu pedido ha sido entregado"
+                    </span>
+                  </p>
+                </>
+              )}
+            </div>
+          )}
+
+          <DialogFooter className="pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setShowModal(false)}
+              className="rounded-sm"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleCambiarEstado}
+              disabled={submitting}
+              className={`rounded-sm ${modalAction === "asignar" ? 'bg-amber-500 hover:bg-amber-600' : 'bg-emerald-500 hover:bg-emerald-600'}`}
+              data-testid="confirm-estado-btn"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Procesando...
+                </>
+              ) : (
+                modalAction === "asignar" ? "Confirmar Retiro" : "Confirmar Entrega"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
