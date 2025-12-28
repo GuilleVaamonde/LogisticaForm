@@ -32,10 +32,14 @@ class EnviosAPITester:
         if details:
             print(f"    Details: {details}")
 
-    def run_test(self, name, method, endpoint, expected_status, data=None, check_response=None):
+    def run_test(self, name, method, endpoint, expected_status, data=None, check_response=None, auth_required=True):
         """Run a single API test"""
         url = f"{self.api_url}/{endpoint}"
         headers = {'Content-Type': 'application/json'}
+        
+        # Add authorization header if token is available and auth is required
+        if auth_required and self.token:
+            headers['Authorization'] = f'Bearer {self.token}'
 
         print(f"\n🔍 Testing {name}...")
         print(f"   URL: {url}")
@@ -47,6 +51,8 @@ class EnviosAPITester:
                 response = requests.post(url, json=data, headers=headers, timeout=10)
             elif method == 'DELETE':
                 response = requests.delete(url, headers=headers, timeout=10)
+            elif method == 'PATCH':
+                response = requests.patch(url, json=data, headers=headers, timeout=10)
 
             success = response.status_code == expected_status
             details = f"Status: {response.status_code}"
