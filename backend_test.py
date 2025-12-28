@@ -131,7 +131,8 @@ class EnviosAPITester:
             "GET",
             "motivos",
             200,
-            check_response=check_motivos
+            check_response=check_motivos,
+            auth_required=False
         )
 
     def test_create_envio(self):
