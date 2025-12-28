@@ -231,11 +231,11 @@ class EnviosAPITester:
         }
         
         def check_envio_response(response):
-            required_fields = ["id", "ticket", "calle", "numero", "departamento", "motivo", "telefono", "contacto", "fecha_carga"]
-            return all(field in response for field in required_fields)
+            required_fields = ["id", "ticket", "calle", "numero", "departamento", "motivo", "telefono", "contacto", "fecha_carga", "estado", "historial_estados"]
+            return all(field in response for field in required_fields) and response["estado"] == "Ingresada"
         
         success, response = self.run_test(
-            "Create Envio",
+            "Create Envio (should start with 'Ingresada' state)",
             "POST",
             "envios",
             200,
@@ -248,6 +248,84 @@ class EnviosAPITester:
             self.test_ticket = response.get("ticket")
             return True, response
         return False, {}
+
+    def test_change_estado_to_asignado(self, envio_id):
+        """Test changing estado from Ingresada to Asignado a courier"""
+        if not envio_id:
+            self.log_test("Change Estado to Asignado", False, "No envio ID available")
+            return False
+        
+        estado_data = {
+            "nuevo_estado": "Asignado a courier"
+        }
+        
+        def check_estado_response(response):
+            return response.get("estado") == "Asignado a courier"
+        
+        return self.run_test(
+            "Change Estado: Ingresada → Asignado a courier",
+            "PATCH",
+            f"envios/{envio_id}/estado",
+            200,
+            data=estado_data,
+            check_response=check_estado_response
+        )
+
+    def test_change_estado_to_entregado(self, envio_id):
+        """Test changing estado from Asignado a courier to Entregado"""
+        if not envio_id:
+            self.log_test("Change Estado to Entregado", False, "No envio ID available")
+            return False
+        
+        estado_data = {
+            "nuevo_estado": "Entregado",
+            "receptor_nombre": "María González",
+            "receptor_cedula": "1.234.567-8"
+        }
+        
+        def check_estado_response(response):
+            return response.get("estado") == "Entregado"
+        
+        return self.run_test(
+            "Change Estado: Asignado a courier → Entregado (with receptor info)",
+            "PATCH",
+            f"envios/{envio_id}/estado",
+            200,
+            data=estado_data,
+            check_response=check_estado_response
+        )
+
+    def test_invalid_estado_transition(self, envio_id):
+        """Test invalid state transition (should fail)"""
+        if not envio_id:
+            self.log_test("Invalid Estado Transition", False, "No envio ID available")
+            return False
+        
+        # Try to go from Entregado back to Ingresada (should fail)
+        estado_data = {
+            "nuevo_estado": "Ingresada"
+        }
+        
+        return self.run_test(
+            "Invalid Estado Transition (should fail)",
+            "PATCH",
+            f"envios/{envio_id}/estado",
+            400,  # Should return 400 for invalid transition
+            data=estado_data
+        )
+
+    def test_get_message_logs(self):
+        """Test getting WhatsApp message logs (admin only)"""
+        def check_messages_response(response):
+            return isinstance(response, list)
+        
+        return self.run_test(
+            "Get WhatsApp Message Logs",
+            "GET",
+            "messages?limit=10",
+            200,
+            check_response=check_messages_response
+        )
 
     def test_get_envios(self):
         """Test getting envios list"""
