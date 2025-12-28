@@ -135,6 +135,86 @@ class EnviosAPITester:
             auth_required=False
         )
 
+    def test_login(self, username="admin", password="admin123"):
+        """Test login with admin credentials"""
+        login_data = {
+            "username": username,
+            "password": password
+        }
+        
+        def check_login_response(response):
+            if "access_token" not in response or "user" not in response:
+                return False
+            self.token = response["access_token"]
+            self.current_user = response["user"]
+            return True
+        
+        success, response = self.run_test(
+            f"Login with {username}/{password}",
+            "POST",
+            "auth/login",
+            200,
+            data=login_data,
+            check_response=check_login_response,
+            auth_required=False
+        )
+        
+        return success, response
+
+    def test_get_me(self):
+        """Test getting current user info"""
+        def check_me_response(response):
+            return "username" in response and "rol" in response
+        
+        return self.run_test(
+            "Get Current User Info",
+            "GET",
+            "auth/me",
+            200,
+            check_response=check_me_response
+        )
+
+    def test_create_user(self):
+        """Test creating a new user (admin only)"""
+        timestamp = datetime.now().strftime('%H%M%S')
+        user_data = {
+            "username": f"test_user_{timestamp}",
+            "password": "test123",
+            "nombre": f"Test User {timestamp}",
+            "rol": "repartidor"
+        }
+        
+        def check_user_response(response):
+            required_fields = ["id", "username", "nombre", "rol", "activo", "created_at"]
+            return all(field in response for field in required_fields)
+        
+        success, response = self.run_test(
+            "Create New User (repartidor)",
+            "POST",
+            "users",
+            200,
+            data=user_data,
+            check_response=check_user_response
+        )
+        
+        if success:
+            self.test_user_id = response.get("id")
+            return True, response
+        return False, {}
+
+    def test_get_users(self):
+        """Test getting users list (admin only)"""
+        def check_users_list(response):
+            return isinstance(response, list) and len(response) > 0
+        
+        return self.run_test(
+            "Get Users List",
+            "GET",
+            "users",
+            200,
+            check_response=check_users_list
+        )
+
     def test_create_envio(self):
         """Test creating a new envio"""
         test_data = {
