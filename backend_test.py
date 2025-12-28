@@ -164,6 +164,7 @@ class EnviosAPITester:
     def test_get_me(self):
         """Test getting current user info"""
         def check_me_response(response):
+            print(f"Current user: {response}")  # Debug info
             return "username" in response and "rol" in response
         
         return self.run_test(
