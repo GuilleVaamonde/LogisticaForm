@@ -378,8 +378,12 @@ class EnviosAPITester:
             return False
         
         url = f"{self.api_url}/envios/{envio_id}/excel"
+        headers = {}
+        if self.token:
+            headers['Authorization'] = f'Bearer {self.token}'
+            
         try:
-            response = requests.get(url, timeout=10)
+            response = requests.get(url, headers=headers, timeout=10)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
@@ -390,6 +394,12 @@ class EnviosAPITester:
                 else:
                     success = False
                     details += f" - Wrong content type: {content_type}"
+            else:
+                try:
+                    error_data = response.json()
+                    details += f" - Error: {error_data}"
+                except:
+                    details += f" - Response: {response.text[:200]}"
             
             self.log_test("Export Single Excel", success, details)
             return success
@@ -400,8 +410,12 @@ class EnviosAPITester:
     def test_export_all_excel(self):
         """Test exporting all envios to Excel"""
         url = f"{self.api_url}/envios/export/excel"
+        headers = {}
+        if self.token:
+            headers['Authorization'] = f'Bearer {self.token}'
+            
         try:
-            response = requests.get(url, timeout=15)
+            response = requests.get(url, headers=headers, timeout=15)
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
             
@@ -416,6 +430,12 @@ class EnviosAPITester:
                 # This might be expected if no envios exist
                 details += " - No envios to export (expected if database is empty)"
                 success = True  # Consider this a pass for empty database
+            else:
+                try:
+                    error_data = response.json()
+                    details += f" - Error: {error_data}"
+                except:
+                    details += f" - Response: {response.text[:200]}"
             
             self.log_test("Export All Excel", success, details)
             return success
