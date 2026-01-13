@@ -7,6 +7,7 @@ import DashboardPage from "@/pages/DashboardPage";
 import UsersPage from "@/pages/UsersPage";
 import RepartidorPage from "@/pages/RepartidorPage";
 import MessagesPage from "@/pages/MessagesPage";
+import TrackingPage from "@/pages/TrackingPage";
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
@@ -39,6 +40,9 @@ function AppRoutes() {
   
   return (
     <Routes>
+      {/* Public tracking page */}
+      <Route path="/rastreo/:ticket" element={<TrackingPage />} />
+      
       <Route path="/login" element={
         user ? <Navigate to={user.rol === "repartidor" ? "/repartidor" : "/"} replace /> : <LoginPage />
       } />
