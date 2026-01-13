@@ -4,7 +4,9 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Package, Loader2, Lock, User } from "lucide-react";
+import { Loader2, Lock, User } from "lucide-react";
+
+const LOGO_URL = "https://customer-assets.emergentagent.com/job_cliente-form/artifacts/ypgu3n9v_image.png";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -37,18 +39,20 @@ export default function LoginPage() {
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4" data-testid="login-page">
       <div className="w-full max-w-md">
         <div className="bg-white border border-slate-200 rounded-sm shadow-sm">
-          <div className="h-1 bg-[#C91A25]"></div>
+          <div className="h-1 bg-[#FF0000]"></div>
           
           <div className="p-8">
             <div className="flex flex-col items-center mb-8">
-              <div className="w-14 h-14 bg-[#C91A25] rounded-sm flex items-center justify-center mb-4">
-                <Package className="w-8 h-8 text-white" strokeWidth={1.5} />
-              </div>
-              <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-                Sistema de Envíos
+              <img 
+                src={LOGO_URL} 
+                alt="Getnet Logo" 
+                className="w-20 h-20 object-contain mb-4"
+              />
+              <h1 className="text-2xl font-bold text-slate-900 tracking-tight text-center">
+                Seguimientos de envíos
               </h1>
-              <p className="text-xs text-slate-500 uppercase tracking-wider mt-1">
-                Uruguay
+              <p className="text-sm text-[#FF0000] font-semibold uppercase tracking-wider mt-1">
+                Getnet
               </p>
             </div>
 
@@ -65,7 +69,7 @@ export default function LoginPage() {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="Ingrese su usuario"
-                    className="pl-10 rounded-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#C91A25]/20 focus:border-[#C91A25] border-slate-200"
+                    className="pl-10 rounded-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#FF0000]/20 focus:border-[#FF0000] border-slate-200"
                   />
                 </div>
               </div>
@@ -82,7 +86,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Ingrese su contraseña"
-                    className="pl-10 rounded-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#C91A25]/20 focus:border-[#C91A25] border-slate-200"
+                    className="pl-10 rounded-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#FF0000]/20 focus:border-[#FF0000] border-slate-200"
                   />
                 </div>
               </div>
@@ -90,7 +94,7 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-sm bg-[#C91A25] hover:bg-[#A6151E] text-white font-medium tracking-wide transition-all active:scale-[0.98]"
+                className="w-full rounded-sm bg-[#FF0000] hover:bg-[#CC0000] text-white font-medium tracking-wide transition-all active:scale-[0.98]"
                 data-testid="login-btn"
               >
                 {loading ? (
@@ -103,12 +107,6 @@ export default function LoginPage() {
                 )}
               </Button>
             </form>
-
-            <div className="mt-6 pt-6 border-t border-slate-100 text-center">
-              <p className="text-xs text-slate-400">
-                Admin por defecto: admin / admin123
-              </p>
-            </div>
           </div>
         </div>
       </div>

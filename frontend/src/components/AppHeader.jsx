@@ -1,7 +1,9 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Package, LogOut, Users, MessageSquare, LayoutDashboard, Bike } from "lucide-react";
+import { LogOut, Users, MessageSquare, LayoutDashboard, Bike } from "lucide-react";
+
+const LOGO_URL = "https://customer-assets.emergentagent.com/job_cliente-form/artifacts/ypgu3n9v_image.png";
 
 export const AppHeader = () => {
   const { user, logout } = useAuth();
@@ -27,15 +29,17 @@ export const AppHeader = () => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-6">
             <Link to="/" className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-[#C91A25] rounded-sm flex items-center justify-center">
-                <Package className="w-5 h-5 text-white" strokeWidth={1.5} />
-              </div>
+              <img 
+                src={LOGO_URL} 
+                alt="Getnet Logo" 
+                className="w-10 h-10 object-contain"
+              />
               <div className="hidden sm:block">
                 <h1 className="text-lg font-bold text-slate-900 tracking-tight leading-none">
-                  Sistema de Envíos
+                  Seguimientos de envíos
                 </h1>
-                <p className="text-xs text-slate-500 uppercase tracking-wider">
-                  Uruguay
+                <p className="text-xs text-[#FF0000] font-semibold uppercase tracking-wider">
+                  Getnet
                 </p>
               </div>
             </Link>
