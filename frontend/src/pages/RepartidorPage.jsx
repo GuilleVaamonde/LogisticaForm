@@ -318,7 +318,7 @@ export default function RepartidorPage() {
             ) : (
               <ScrollArea className="h-[500px] sm:h-[600px]">
                 {/* Mobile Cards View */}
-                <div className="block md:hidden space-y-3">
+                <div className="block lg:hidden space-y-3">
                   {envios.map((envio) => (
                     <div 
                       key={envio.id}
@@ -392,7 +392,7 @@ export default function RepartidorPage() {
                 </div>
 
                 {/* Desktop Table View */}
-                <Table className="hidden md:table">
+                <Table className="hidden lg:table">
                   <TableHeader>
                     <TableRow className="bg-slate-50 hover:bg-slate-50">
                       <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500">
