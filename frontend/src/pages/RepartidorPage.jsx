@@ -117,6 +117,28 @@ export default function RepartidorPage() {
     fetchEnvios(emptyFilters);
   };
 
+  const copyTrackingLink = async (ticket, envioId) => {
+    const link = `${FRONTEND_URL}/rastreo/${ticket}`;
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopiedId(envioId);
+      toast.success("Link copiado", {
+        description: `Rastreo de ${ticket}`
+      });
+      setTimeout(() => setCopiedId(null), 2000);
+    } catch (err) {
+      const textArea = document.createElement("textarea");
+      textArea.value = link;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+      setCopiedId(envioId);
+      toast.success("Link copiado");
+      setTimeout(() => setCopiedId(null), 2000);
+    }
+  };
+
   const openAsignarModal = (envio) => {
     setSelectedEnvio(envio);
     setModalAction("asignar");
