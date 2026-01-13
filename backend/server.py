@@ -724,6 +724,41 @@ async def get_envio_messages(
     return messages
 
 
+# ============== PUBLIC TRACKING ROUTES ==============
+
+class TrackingResponse(BaseModel):
+    ticket: str
+    estado: str
+    calle: str
+    numero: str
+    apto: str
+    departamento: str
+    contacto: str
+    fecha_carga: str
+    historial_estados: List[EstadoHistorial]
+
+
+@tracking_router.get("/{ticket}", response_model=TrackingResponse)
+async def get_tracking_by_ticket(ticket: str):
+    """Public endpoint for customers to track their shipment"""
+    envio = await db.envios.find_one({"ticket": ticket}, {"_id": 0})
+    
+    if not envio:
+        raise HTTPException(status_code=404, detail="Envío no encontrado")
+    
+    return TrackingResponse(
+        ticket=envio["ticket"],
+        estado=envio["estado"],
+        calle=envio["calle"],
+        numero=envio["numero"],
+        apto=envio.get("apto", ""),
+        departamento=envio["departamento"],
+        contacto=envio["contacto"],
+        fecha_carga=envio["fecha_carga"],
+        historial_estados=envio.get("historial_estados", [])
+    )
+
+
 # ============== INIT ADMIN ==============
 
 @app.on_event("startup")
