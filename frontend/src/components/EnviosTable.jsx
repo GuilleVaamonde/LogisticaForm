@@ -7,10 +7,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Download, Trash2, MapPin, Phone, Clock } from "lucide-react";
+import { Download, Trash2, MapPin, Phone, Clock, Link, Check } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { toast } from "sonner";
+import { useState } from "react";
+
+const FRONTEND_URL = window.location.origin;
 
 export const EnviosTable = ({ envios, loading, onDelete, onExport, showActions = true }) => {
+  const [copiedId, setCopiedId] = useState(null);
+
   const formatDate = (isoString) => {
     const date = new Date(isoString);
     return new Intl.DateTimeFormat('es-UY', {
@@ -45,6 +51,29 @@ export const EnviosTable = ({ envios, loading, onDelete, onExport, showActions =
         return 'bg-emerald-50 text-emerald-700 border-emerald-200';
       default:
         return 'bg-slate-50 text-slate-700 border-slate-200';
+    }
+  };
+
+  const copyTrackingLink = async (ticket, envioId) => {
+    const link = `${FRONTEND_URL}/rastreo/${ticket}`;
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopiedId(envioId);
+      toast.success("Link copiado", {
+        description: `Rastreo de ${ticket}`
+      });
+      setTimeout(() => setCopiedId(null), 2000);
+    } catch (err) {
+      // Fallback for older browsers
+      const textArea = document.createElement("textarea");
+      textArea.value = link;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+      setCopiedId(envioId);
+      toast.success("Link copiado");
+      setTimeout(() => setCopiedId(null), 2000);
     }
   };
 
@@ -144,6 +173,20 @@ export const EnviosTable = ({ envios, loading, onDelete, onExport, showActions =
               {showActions && (
                 <TableCell className="py-3 text-right">
                   <div className="flex items-center justify-end gap-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => copyTrackingLink(envio.ticket, envio.id)}
+                      className={`h-8 w-8 p-0 ${copiedId === envio.id ? 'bg-emerald-50 text-emerald-600' : 'hover:bg-blue-50 hover:text-blue-600'}`}
+                      title="Copiar link de rastreo"
+                      data-testid={`copy-link-btn-${envio.id}`}
+                    >
+                      {copiedId === envio.id ? (
+                        <Check className="w-4 h-4" strokeWidth={2} />
+                      ) : (
+                        <Link className="w-4 h-4" strokeWidth={1.5} />
+                      )}
+                    </Button>
                     <Button
                       variant="ghost"
                       size="sm"
