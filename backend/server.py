@@ -27,7 +27,7 @@ client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
 # JWT Config
-JWT_SECRET = os.environ.get('JWT_SECRET', 'envios-uruguay-secret-key-2024')
+JWT_SECRET = os.environ['JWT_SECRET']
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_HOURS = 24
 
@@ -518,7 +518,7 @@ async def export_all_envios_excel(
         else:
             query["fecha_carga"] = {"$lte": fecha_hasta}
     
-    envios = await db.envios.find(query, {"_id": 0}).sort("fecha_carga", -1).to_list(10000)
+    envios = await db.envios.find(query, {"_id": 0}).sort("fecha_carga", -1).to_list(1000)
     
     if not envios:
         raise HTTPException(status_code=404, detail="No hay envíos para exportar")
