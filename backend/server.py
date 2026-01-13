@@ -609,7 +609,8 @@ async def cambiar_estado(
         "usuario_id": current_user["id"],
         "usuario_nombre": current_user["nombre"],
         "receptor_nombre": cambio.receptor_nombre,
-        "receptor_cedula": cambio.receptor_cedula
+        "receptor_cedula": cambio.receptor_cedula,
+        "imagen_url": cambio.imagen_url
     }
     
     await db.envios.update_one(
@@ -620,12 +621,15 @@ async def cambiar_estado(
         }
     )
     
-    # Send WhatsApp message (simulated)
+    # Generate tracking link
+    tracking_link = f"{FRONTEND_URL}/rastreo/{envio['ticket']}"
+    
+    # Send WhatsApp message (simulated) with tracking link
     mensaje = None
     if cambio.nuevo_estado == "Asignado a courier":
-        mensaje = f"🚚 Tu pedido con ticket {envio['ticket']} fue asignado a un cadete. Pronto llegará a tu dirección."
+        mensaje = f"🚚 Tu pedido con ticket {envio['ticket']} fue asignado a un cadete. Pronto llegará a tu dirección.\n\n📍 Rastrear envío: {tracking_link}"
     elif cambio.nuevo_estado == "Entregado":
-        mensaje = f"✅ Tu pedido con ticket {envio['ticket']} ha sido entregado. Recibido por: {cambio.receptor_nombre}. ¡Gracias por confiar en nosotros!"
+        mensaje = f"✅ Tu pedido con ticket {envio['ticket']} ha sido entregado. Recibido por: {cambio.receptor_nombre}.\n\n📍 Ver detalle: {tracking_link}\n\n¡Gracias por confiar en nosotros!"
     
     if mensaje:
         await log_whatsapp_message(
@@ -638,6 +642,30 @@ async def cambiar_estado(
     
     updated_envio = await db.envios.find_one({"id": envio_id}, {"_id": 0})
     return EnvioResponse(**updated_envio)
+
+
+@envios_router.post("/{envio_id}/upload-image")
+async def upload_delivery_image(
+    envio_id: str,
+    file: UploadFile = File(...),
+    current_user: dict = Depends(get_current_user)
+):
+    """Upload an image for delivery proof - stores as base64 in MongoDB"""
+    envio = await db.envios.find_one({"id": envio_id}, {"_id": 0})
+    if not envio:
+        raise HTTPException(status_code=404, detail="Envío no encontrado")
+    
+    # Read and encode image
+    contents = await file.read()
+    if len(contents) > 5 * 1024 * 1024:  # 5MB limit
+        raise HTTPException(status_code=400, detail="Imagen muy grande. Máximo 5MB")
+    
+    # Encode to base64
+    base64_image = base64.b64encode(contents).decode('utf-8')
+    content_type = file.content_type or 'image/jpeg'
+    data_url = f"data:{content_type};base64,{base64_image}"
+    
+    return {"imagen_url": data_url}
 
 
 @envios_router.get("/{envio_id}/excel")
