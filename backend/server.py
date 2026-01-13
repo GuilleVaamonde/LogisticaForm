@@ -159,6 +159,7 @@ class CambioEstadoRequest(BaseModel):
     nuevo_estado: str
     receptor_nombre: Optional[str] = None
     receptor_cedula: Optional[str] = None
+    imagen_url: Optional[str] = None
 
 
 class MessageLog(BaseModel):
