@@ -382,7 +382,29 @@ export default function RepartidorPage() {
                         </div>
                       </div>
                       
-                      <div className="mt-4 flex justify-end">
+                      <div className="mt-4 flex flex-col gap-2">
+                        {/* Copy Link Button */}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => copyTrackingLink(envio.ticket, envio.id)}
+                          className={`rounded-sm w-full ${copiedId === envio.id ? 'bg-emerald-50 border-emerald-300 text-emerald-700' : 'border-slate-200'}`}
+                          data-testid={`copy-link-card-${envio.id}`}
+                        >
+                          {copiedId === envio.id ? (
+                            <>
+                              <Check className="w-4 h-4 mr-2" strokeWidth={2} />
+                              Link Copiado
+                            </>
+                          ) : (
+                            <>
+                              <Link className="w-4 h-4 mr-2" strokeWidth={1.5} />
+                              Copiar Link de Rastreo
+                            </>
+                          )}
+                        </Button>
+                        
+                        {/* Action Buttons */}
                         {envio.estado === "Ingresada" && (
                           <Button
                             size="sm"
@@ -406,7 +428,7 @@ export default function RepartidorPage() {
                           </Button>
                         )}
                         {envio.estado === "Entregado" && (
-                          <span className="text-sm text-emerald-600 font-medium">
+                          <span className="text-sm text-emerald-600 font-medium text-center py-2">
                             ✓ Completado
                           </span>
                         )}
