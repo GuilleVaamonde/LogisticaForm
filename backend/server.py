@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, status
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, status, UploadFile, File, Form
 from fastapi.responses import StreamingResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dotenv import load_dotenv
@@ -16,6 +16,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 import jwt
 import bcrypt
+import base64
 
 
 ROOT_DIR = Path(__file__).parent
@@ -31,6 +32,9 @@ JWT_SECRET = os.environ['JWT_SECRET']
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_HOURS = 24
 
+# Frontend URL for tracking links
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://cliente-form.preview.emergentagent.com')
+
 # Create the main app
 app = FastAPI()
 
@@ -40,6 +44,7 @@ auth_router = APIRouter(prefix="/api/auth", tags=["auth"])
 users_router = APIRouter(prefix="/api/users", tags=["users"])
 envios_router = APIRouter(prefix="/api/envios", tags=["envios"])
 messages_router = APIRouter(prefix="/api/messages", tags=["messages"])
+tracking_router = APIRouter(prefix="/api/tracking", tags=["tracking"])
 
 security = HTTPBearer()
 
