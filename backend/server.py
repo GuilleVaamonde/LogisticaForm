@@ -784,6 +784,7 @@ app.include_router(auth_router)
 app.include_router(users_router)
 app.include_router(envios_router)
 app.include_router(messages_router)
+app.include_router(tracking_router)
 
 app.add_middleware(
     CORSMiddleware,
