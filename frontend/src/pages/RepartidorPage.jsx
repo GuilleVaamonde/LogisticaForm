@@ -24,10 +24,11 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Bike, Filter, PackageCheck, Truck, Loader2, MapPin, Phone, Clock, Camera, X, Image } from "lucide-react";
+import { Bike, Filter, PackageCheck, Truck, Loader2, MapPin, Phone, Clock, Camera, X, Link, Check } from "lucide-react";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
+const FRONTEND_URL = window.location.origin;
 
 export default function RepartidorPage() {
   const { user } = useAuth();
@@ -36,6 +37,7 @@ export default function RepartidorPage() {
   const [motivos, setMotivos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
+  const [copiedId, setCopiedId] = useState(null);
   const [filters, setFilters] = useState({
     departamento: "",
     motivo: "",
