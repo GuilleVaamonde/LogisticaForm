@@ -181,10 +181,10 @@ export default function DashboardPage() {
           {/* Form Section */}
           <div className="lg:col-span-5">
             <div className="bg-white border border-slate-200 rounded-sm" data-testid="form-section">
-              <div className="h-1 bg-[#C91A25]"></div>
+              <div className="h-1 bg-[#FF0000]"></div>
               <div className="p-6 md:p-8">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-[#C91A25] rounded-sm flex items-center justify-center">
+                  <div className="w-10 h-10 bg-[#FF0000] rounded-sm flex items-center justify-center">
                     <Truck className="w-5 h-5 text-white" strokeWidth={1.5} />
                   </div>
                   <div>
@@ -211,7 +211,7 @@ export default function DashboardPage() {
           {/* Table Section */}
           <div className="lg:col-span-7">
             <div className="bg-white border border-slate-200 rounded-sm" data-testid="table-section">
-              <div className="h-1 bg-[#C91A25]"></div>
+              <div className="h-1 bg-[#FF0000]"></div>
               <div className="border-b border-slate-100 p-4 md:p-6 bg-slate-50/50">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="flex items-center gap-3">

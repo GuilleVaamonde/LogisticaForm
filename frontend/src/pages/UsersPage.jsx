@@ -138,12 +138,12 @@ export default function UsersPage() {
       
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white border border-slate-200 rounded-sm">
-          <div className="h-1 bg-[#C91A25]"></div>
+          <div className="h-1 bg-[#FF0000]"></div>
           
           <div className="border-b border-slate-100 p-6 bg-slate-50/50">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#C91A25] rounded-sm flex items-center justify-center">
+                <div className="w-10 h-10 bg-[#FF0000] rounded-sm flex items-center justify-center">
                   <Users className="w-5 h-5 text-white" strokeWidth={1.5} />
                 </div>
                 <div>
@@ -158,7 +158,7 @@ export default function UsersPage() {
               
               <Button
                 onClick={() => setShowModal(true)}
-                className="rounded-sm bg-[#C91A25] hover:bg-[#A6151E] text-white"
+                className="rounded-sm bg-[#FF0000] hover:bg-[#A6151E] text-white"
                 data-testid="create-user-btn"
               >
                 <Plus className="w-4 h-4 mr-2" strokeWidth={1.5} />
@@ -318,7 +318,7 @@ export default function UsersPage() {
               <Button
                 type="submit"
                 disabled={submitting}
-                className="rounded-sm bg-[#C91A25] hover:bg-[#A6151E]"
+                className="rounded-sm bg-[#FF0000] hover:bg-[#A6151E]"
                 data-testid="submit-new-user-btn"
               >
                 {submitting ? (

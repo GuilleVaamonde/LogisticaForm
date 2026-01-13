@@ -64,11 +64,11 @@ export default function MessagesPage() {
       
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white border border-slate-200 rounded-sm">
-          <div className="h-1 bg-[#C91A25]"></div>
+          <div className="h-1 bg-[#FF0000]"></div>
           
           <div className="border-b border-slate-100 p-6 bg-slate-50/50">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#C91A25] rounded-sm flex items-center justify-center">
+              <div className="w-10 h-10 bg-[#FF0000] rounded-sm flex items-center justify-center">
                 <MessageSquare className="w-5 h-5 text-white" strokeWidth={1.5} />
               </div>
               <div>

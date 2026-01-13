@@ -99,7 +99,7 @@ export const EnvioForm = ({
             value={formData.ticket}
             onChange={(e) => handleChange("ticket", e.target.value)}
             placeholder="Ej: ENV-2024-001"
-            className={`rounded-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#C91A25]/20 focus:border-[#C91A25] font-mono ${errors.ticket ? 'border-red-500' : 'border-slate-200'}`}
+            className={`rounded-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#FF0000]/20 focus:border-[#FF0000] font-mono ${errors.ticket ? 'border-red-500' : 'border-slate-200'}`}
           />
           {errors.ticket && <p className="text-xs text-red-500 mt-1">{errors.ticket}</p>}
         </div>
@@ -116,7 +116,7 @@ export const EnvioForm = ({
               value={formData.contacto}
               onChange={(e) => handleChange("contacto", e.target.value)}
               placeholder="Nombre de quien recibe"
-              className={`rounded-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#C91A25]/20 focus:border-[#C91A25] ${errors.contacto ? 'border-red-500' : 'border-slate-200'}`}
+              className={`rounded-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#FF0000]/20 focus:border-[#FF0000] ${errors.contacto ? 'border-red-500' : 'border-slate-200'}`}
             />
             {errors.contacto && <p className="text-xs text-red-500 mt-1">{errors.contacto}</p>}
           </div>
@@ -130,7 +130,7 @@ export const EnvioForm = ({
               value={formData.telefono}
               onChange={(e) => handleChange("telefono", e.target.value)}
               placeholder="099 123 456"
-              className={`rounded-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#C91A25]/20 focus:border-[#C91A25] ${errors.telefono ? 'border-red-500' : 'border-slate-200'}`}
+              className={`rounded-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#FF0000]/20 focus:border-[#FF0000] ${errors.telefono ? 'border-red-500' : 'border-slate-200'}`}
             />
             {errors.telefono && <p className="text-xs text-red-500 mt-1">{errors.telefono}</p>}
           </div>
@@ -148,7 +148,7 @@ export const EnvioForm = ({
               value={formData.calle}
               onChange={(e) => handleChange("calle", e.target.value)}
               placeholder="Nombre de la calle"
-              className={`rounded-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#C91A25]/20 focus:border-[#C91A25] ${errors.calle ? 'border-red-500' : 'border-slate-200'}`}
+              className={`rounded-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#FF0000]/20 focus:border-[#FF0000] ${errors.calle ? 'border-red-500' : 'border-slate-200'}`}
             />
             {errors.calle && <p className="text-xs text-red-500 mt-1">{errors.calle}</p>}
           </div>
@@ -162,7 +162,7 @@ export const EnvioForm = ({
               value={formData.numero}
               onChange={(e) => handleChange("numero", e.target.value)}
               placeholder="1234"
-              className={`rounded-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#C91A25]/20 focus:border-[#C91A25] ${errors.numero ? 'border-red-500' : 'border-slate-200'}`}
+              className={`rounded-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#FF0000]/20 focus:border-[#FF0000] ${errors.numero ? 'border-red-500' : 'border-slate-200'}`}
             />
             {errors.numero && <p className="text-xs text-red-500 mt-1">{errors.numero}</p>}
           </div>
@@ -180,7 +180,7 @@ export const EnvioForm = ({
               value={formData.apto}
               onChange={(e) => handleChange("apto", e.target.value)}
               placeholder="Ej: Apto 101"
-              className="rounded-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#C91A25]/20 focus:border-[#C91A25] border-slate-200"
+              className="rounded-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#FF0000]/20 focus:border-[#FF0000] border-slate-200"
             />
           </div>
           <div>
@@ -193,7 +193,7 @@ export const EnvioForm = ({
               value={formData.esquina}
               onChange={(e) => handleChange("esquina", e.target.value)}
               placeholder="Calle de referencia"
-              className="rounded-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#C91A25]/20 focus:border-[#C91A25] border-slate-200"
+              className="rounded-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#FF0000]/20 focus:border-[#FF0000] border-slate-200"
             />
           </div>
         </div>
@@ -211,7 +211,7 @@ export const EnvioForm = ({
               <SelectTrigger 
                 id="departamento"
                 data-testid="select-departamento"
-                className={`rounded-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#C91A25]/20 focus:border-[#C91A25] ${errors.departamento ? 'border-red-500' : 'border-slate-200'}`}
+                className={`rounded-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#FF0000]/20 focus:border-[#FF0000] ${errors.departamento ? 'border-red-500' : 'border-slate-200'}`}
               >
                 <SelectValue placeholder="Seleccionar..." />
               </SelectTrigger>
@@ -236,7 +236,7 @@ export const EnvioForm = ({
               <SelectTrigger 
                 id="motivo"
                 data-testid="select-motivo"
-                className={`rounded-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#C91A25]/20 focus:border-[#C91A25] ${errors.motivo ? 'border-red-500' : 'border-slate-200'}`}
+                className={`rounded-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#FF0000]/20 focus:border-[#FF0000] ${errors.motivo ? 'border-red-500' : 'border-slate-200'}`}
               >
                 <SelectValue placeholder="Seleccionar..." />
               </SelectTrigger>
@@ -264,7 +264,7 @@ export const EnvioForm = ({
             onChange={(e) => handleChange("comentarios", e.target.value)}
             placeholder="Observaciones adicionales..."
             rows={3}
-            className="rounded-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#C91A25]/20 focus:border-[#C91A25] border-slate-200 resize-none"
+            className="rounded-sm bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#FF0000]/20 focus:border-[#FF0000] border-slate-200 resize-none"
           />
         </div>
 
@@ -273,7 +273,7 @@ export const EnvioForm = ({
           <Button
             type="submit"
             disabled={submitting}
-            className="flex-1 rounded-sm bg-[#C91A25] hover:bg-[#A6151E] text-white font-medium tracking-wide transition-all active:scale-[0.98]"
+            className="flex-1 rounded-sm bg-[#FF0000] hover:bg-[#A6151E] text-white font-medium tracking-wide transition-all active:scale-[0.98]"
             data-testid="submit-btn"
           >
             {submitting ? (
