@@ -507,6 +507,20 @@ export default function RepartidorPage() {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => copyTrackingLink(envio.ticket, envio.id)}
+                              className={`h-8 w-8 p-0 ${copiedId === envio.id ? 'bg-emerald-50 text-emerald-600' : 'hover:bg-blue-50 hover:text-blue-600'}`}
+                              title="Copiar link de rastreo"
+                              data-testid={`copy-link-btn-${envio.id}`}
+                            >
+                              {copiedId === envio.id ? (
+                                <Check className="w-4 h-4" strokeWidth={2} />
+                              ) : (
+                                <Link className="w-4 h-4" strokeWidth={1.5} />
+                              )}
+                            </Button>
                             {envio.estado === "Ingresada" && (
                               <Button
                                 size="sm"
