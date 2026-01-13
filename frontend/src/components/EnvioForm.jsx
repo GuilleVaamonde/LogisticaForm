@@ -273,7 +273,7 @@ export const EnvioForm = ({
           <Button
             type="submit"
             disabled={submitting}
-            className="flex-1 rounded-sm bg-[#FF0000] hover:bg-[#A6151E] text-white font-medium tracking-wide transition-all active:scale-[0.98]"
+            className="flex-1 rounded-sm bg-[#FF0000] hover:bg-[#CC0000] text-white font-medium tracking-wide transition-all active:scale-[0.98]"
             data-testid="submit-btn"
           >
             {submitting ? (

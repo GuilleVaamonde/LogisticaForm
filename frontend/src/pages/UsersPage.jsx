@@ -158,7 +158,7 @@ export default function UsersPage() {
               
               <Button
                 onClick={() => setShowModal(true)}
-                className="rounded-sm bg-[#FF0000] hover:bg-[#A6151E] text-white"
+                className="rounded-sm bg-[#FF0000] hover:bg-[#CC0000] text-white"
                 data-testid="create-user-btn"
               >
                 <Plus className="w-4 h-4 mr-2" strokeWidth={1.5} />
@@ -318,7 +318,7 @@ export default function UsersPage() {
               <Button
                 type="submit"
                 disabled={submitting}
-                className="rounded-sm bg-[#FF0000] hover:bg-[#A6151E]"
+                className="rounded-sm bg-[#FF0000] hover:bg-[#CC0000]"
                 data-testid="submit-new-user-btn"
               >
                 {submitting ? (
