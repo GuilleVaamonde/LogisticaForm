@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -24,7 +24,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Bike, Filter, PackageCheck, Truck, Loader2, MapPin, Phone, Clock } from "lucide-react";
+import { Bike, Filter, PackageCheck, Truck, Loader2, MapPin, Phone, Clock, Camera, X, Image } from "lucide-react";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -47,9 +47,15 @@ export default function RepartidorPage() {
   // Modal state
   const [showModal, setShowModal] = useState(false);
   const [selectedEnvio, setSelectedEnvio] = useState(null);
-  const [modalAction, setModalAction] = useState(null); // "asignar" or "entregar"
+  const [modalAction, setModalAction] = useState(null);
   const [receptorData, setReceptorData] = useState({ nombre: "", cedula: "" });
   const [submitting, setSubmitting] = useState(false);
+  
+  // Image upload state
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef(null);
 
   const buildQueryString = (params) => {
     const query = new URLSearchParams();
@@ -119,7 +125,57 @@ export default function RepartidorPage() {
     setSelectedEnvio(envio);
     setModalAction("entregar");
     setReceptorData({ nombre: "", cedula: "" });
+    setSelectedImage(null);
+    setImagePreview(null);
     setShowModal(true);
+  };
+
+  const handleImageSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Imagen muy grande. Máximo 5MB");
+        return;
+      }
+      setSelectedImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const uploadImage = async () => {
+    if (!selectedImage || !selectedEnvio) return null;
+    
+    setUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedImage);
+      
+      const response = await axios.post(
+        `${API}/envios/${selectedEnvio.id}/upload-image`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+      
+      return response.data.imagen_url;
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast.error("Error al subir la imagen");
+      return null;
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
   const handleCambiarEstado = async () => {
@@ -134,19 +190,26 @@ export default function RepartidorPage() {
 
     setSubmitting(true);
     try {
+      let imagenUrl = null;
+      
+      // Upload image if selected (for entregar action)
+      if (modalAction === "entregar" && selectedImage) {
+        imagenUrl = await uploadImage();
+      }
+
       const nuevoEstado = modalAction === "asignar" ? "Asignado a courier" : "Entregado";
       
       const payload = {
         nuevo_estado: nuevoEstado,
         ...(modalAction === "entregar" && {
           receptor_nombre: receptorData.nombre,
-          receptor_cedula: receptorData.cedula
+          receptor_cedula: receptorData.cedula,
+          imagen_url: imagenUrl
         })
       };
 
       const response = await axios.patch(`${API}/envios/${selectedEnvio.id}/estado`, payload);
       
-      // Update local state
       setEnvios(prev => prev.map(e => 
         e.id === selectedEnvio.id ? response.data : e
       ));
@@ -159,6 +222,8 @@ export default function RepartidorPage() {
       setShowModal(false);
       setSelectedEnvio(null);
       setReceptorData({ nombre: "", cedula: "" });
+      setSelectedImage(null);
+      setImagePreview(null);
     } catch (error) {
       console.error("Error changing status:", error);
       const message = error.response?.data?.detail || "Error al cambiar estado";
@@ -196,22 +261,22 @@ export default function RepartidorPage() {
     <div className="min-h-screen bg-slate-50" data-testid="repartidor-page">
       <AppHeader />
       
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
         <div className="bg-white border border-slate-200 rounded-sm">
           <div className="h-1 bg-[#FF0000]"></div>
           
-          <div className="border-b border-slate-100 p-6 bg-slate-50/50">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="border-b border-slate-100 p-3 sm:p-6 bg-slate-50/50">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#FF0000] rounded-sm flex items-center justify-center">
+                <div className="w-10 h-10 bg-[#FF0000] rounded-sm flex items-center justify-center flex-shrink-0">
                   <Bike className="w-5 h-5 text-white" strokeWidth={1.5} />
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+                  <h1 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
                     Panel de Repartidor
                   </h1>
                   <p className="text-xs text-slate-500 uppercase tracking-wider">
-                    Bienvenido, {user?.nombre}
+                    {user?.nombre}
                   </p>
                 </div>
               </div>
@@ -219,6 +284,7 @@ export default function RepartidorPage() {
               <Button
                 onClick={() => setShowFilters(!showFilters)}
                 variant="outline"
+                size="sm"
                 className="rounded-sm border-slate-200 hover:bg-slate-100"
                 data-testid="toggle-filters-btn"
               >
@@ -238,7 +304,7 @@ export default function RepartidorPage() {
             )}
           </div>
 
-          <div className="p-4 md:p-6">
+          <div className="p-2 sm:p-4 md:p-6">
             {loading ? (
               <div className="text-center py-12 text-slate-500">Cargando...</div>
             ) : envios.length === 0 ? (
@@ -250,8 +316,83 @@ export default function RepartidorPage() {
                 </p>
               </div>
             ) : (
-              <ScrollArea className="h-[600px]">
-                <Table>
+              <ScrollArea className="h-[500px] sm:h-[600px]">
+                {/* Mobile Cards View */}
+                <div className="block sm:hidden space-y-3">
+                  {envios.map((envio) => (
+                    <div 
+                      key={envio.id}
+                      className="bg-white border border-slate-200 rounded-lg p-4"
+                      data-testid={`envio-card-${envio.id}`}
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <span className="font-mono font-bold text-slate-900">
+                            {envio.ticket}
+                          </span>
+                          <span className={`ml-2 inline-flex px-2 py-0.5 text-xs font-medium border rounded-sm ${getEstadoColor(envio.estado)}`}>
+                            {envio.estado}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-start gap-2">
+                          <MapPin className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                          <div>
+                            <p className="font-medium text-slate-700">
+                              {envio.calle} {envio.numero}{envio.apto && `, ${envio.apto}`}
+                            </p>
+                            <p className="text-xs text-slate-500">{envio.departamento}</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          <Phone className="w-4 h-4 text-slate-400 flex-shrink-0" strokeWidth={1.5} />
+                          <span className="text-slate-600">{envio.contacto} - {envio.telefono}</span>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-slate-400 flex-shrink-0" strokeWidth={1.5} />
+                          <span className="text-xs text-slate-500">{formatDate(envio.fecha_carga)}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-4 flex justify-end">
+                        {envio.estado === "Ingresada" && (
+                          <Button
+                            size="sm"
+                            onClick={() => openAsignarModal(envio)}
+                            className="rounded-sm bg-amber-500 hover:bg-amber-600 text-white w-full"
+                            data-testid={`asignar-btn-${envio.id}`}
+                          >
+                            <Truck className="w-4 h-4 mr-2" strokeWidth={1.5} />
+                            Retirar Paquete
+                          </Button>
+                        )}
+                        {envio.estado === "Asignado a courier" && (
+                          <Button
+                            size="sm"
+                            onClick={() => openEntregarModal(envio)}
+                            className="rounded-sm bg-emerald-500 hover:bg-emerald-600 text-white w-full"
+                            data-testid={`entregar-btn-${envio.id}`}
+                          >
+                            <PackageCheck className="w-4 h-4 mr-2" strokeWidth={1.5} />
+                            Marcar Entregado
+                          </Button>
+                        )}
+                        {envio.estado === "Entregado" && (
+                          <span className="text-sm text-emerald-600 font-medium">
+                            ✓ Completado
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop Table View */}
+                <Table className="hidden sm:table">
                   <TableHeader>
                     <TableRow className="bg-slate-50 hover:bg-slate-50">
                       <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500">
@@ -361,7 +502,7 @@ export default function RepartidorPage() {
 
       {/* Estado Change Modal */}
       <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold text-slate-900">
               {modalAction === "asignar" ? "Confirmar Retiro" : "Confirmar Entrega"}
@@ -375,13 +516,13 @@ export default function RepartidorPage() {
           
           {selectedEnvio && (
             <div className="space-y-4">
-              <div className="bg-slate-50 p-4 rounded-sm border border-slate-200">
+              <div className="bg-slate-50 p-3 sm:p-4 rounded-sm border border-slate-200">
                 <p className="text-sm font-medium text-slate-700">
                   {selectedEnvio.calle} {selectedEnvio.numero}
                   {selectedEnvio.apto && `, ${selectedEnvio.apto}`}
                 </p>
                 <p className="text-xs text-slate-500 mt-1">{selectedEnvio.departamento}</p>
-                <div className="flex items-center gap-4 mt-2 pt-2 border-t border-slate-200">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-2 pt-2 border-t border-slate-200">
                   <span className="text-xs text-slate-600">{selectedEnvio.contacto}</span>
                   <span className="text-xs text-slate-500">{selectedEnvio.telefono}</span>
                 </div>
@@ -389,10 +530,7 @@ export default function RepartidorPage() {
 
               {modalAction === "asignar" && (
                 <p className="text-sm text-slate-600">
-                  Al confirmar, el cliente recibirá un mensaje: 
-                  <span className="italic text-slate-500 block mt-1">
-                    "Tu pedido fue asignado a un cadete"
-                  </span>
+                  Al confirmar, el cliente recibirá un mensaje con link de rastreo.
                 </p>
               )}
 
@@ -426,37 +564,74 @@ export default function RepartidorPage() {
                         className="rounded-sm"
                       />
                     </div>
+                    
+                    {/* Image Upload Section */}
+                    <div>
+                      <Label className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5 block">
+                        Foto de Entrega (opcional)
+                      </Label>
+                      
+                      {!imagePreview ? (
+                        <div 
+                          onClick={() => fileInputRef.current?.click()}
+                          className="border-2 border-dashed border-slate-200 rounded-lg p-6 text-center cursor-pointer hover:border-slate-300 transition-colors"
+                        >
+                          <Camera className="w-8 h-8 mx-auto text-slate-400 mb-2" strokeWidth={1.5} />
+                          <p className="text-sm text-slate-500">Toca para tomar foto o seleccionar</p>
+                          <p className="text-xs text-slate-400 mt-1">Máximo 5MB</p>
+                        </div>
+                      ) : (
+                        <div className="relative">
+                          <img 
+                            src={imagePreview} 
+                            alt="Preview" 
+                            className="w-full h-48 object-cover rounded-lg border border-slate-200"
+                          />
+                          <button
+                            type="button"
+                            onClick={removeImage}
+                            className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
+                      
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        onChange={handleImageSelect}
+                        className="hidden"
+                        data-testid="image-input"
+                      />
+                    </div>
                   </div>
-                  <p className="text-sm text-slate-600 mt-4">
-                    Al confirmar, el cliente recibirá:
-                    <span className="italic text-slate-500 block mt-1">
-                      "Tu pedido ha sido entregado"
-                    </span>
-                  </p>
                 </>
               )}
             </div>
           )}
 
-          <DialogFooter className="pt-4">
+          <DialogFooter className="pt-4 flex-col sm:flex-row gap-2">
             <Button
               type="button"
               variant="outline"
               onClick={() => setShowModal(false)}
-              className="rounded-sm"
+              className="rounded-sm w-full sm:w-auto"
             >
               Cancelar
             </Button>
             <Button
               onClick={handleCambiarEstado}
-              disabled={submitting}
-              className={`rounded-sm ${modalAction === "asignar" ? 'bg-amber-500 hover:bg-amber-600' : 'bg-emerald-500 hover:bg-emerald-600'}`}
+              disabled={submitting || uploadingImage}
+              className={`rounded-sm w-full sm:w-auto ${modalAction === "asignar" ? 'bg-amber-500 hover:bg-amber-600' : 'bg-emerald-500 hover:bg-emerald-600'}`}
               data-testid="confirm-estado-btn"
             >
-              {submitting ? (
+              {(submitting || uploadingImage) ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Procesando...
+                  {uploadingImage ? "Subiendo imagen..." : "Procesando..."}
                 </>
               ) : (
                 modalAction === "asignar" ? "Confirmar Retiro" : "Confirmar Entrega"
