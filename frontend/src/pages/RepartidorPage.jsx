@@ -158,6 +158,9 @@ export default function RepartidorPage() {
   const openNoEntregadoModal = (envio) => {
     setSelectedEnvio(envio);
     setModalAction("no_entregado");
+    setNoEntregadoComentario("");
+    setSelectedImage(null);
+    setImagePreview(null);
     setShowModal(true);
   };
 
