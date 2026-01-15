@@ -584,8 +584,9 @@ async def cambiar_estado(
     current_state = envio["estado"]
     valid_transitions = {
         "Ingresada": ["Asignado a courier"],
-        "Asignado a courier": ["Entregado"],
-        "Entregado": []
+        "Asignado a courier": ["Entregado", "No entregado"],
+        "Entregado": [],
+        "No entregado": ["Asignado a courier"]
     }
     
     if cambio.nuevo_estado not in valid_transitions.get(current_state, []):
