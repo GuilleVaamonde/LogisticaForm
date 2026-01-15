@@ -632,6 +632,8 @@ async def cambiar_estado(
         mensaje = f"🚚 Tu pedido con ticket {envio['ticket']} fue asignado a un cadete. Pronto llegará a tu dirección.\n\n📍 Rastrear envío: {tracking_link}"
     elif cambio.nuevo_estado == "Entregado":
         mensaje = f"✅ Tu pedido con ticket {envio['ticket']} ha sido entregado. Recibido por: {cambio.receptor_nombre}.\n\n📍 Ver detalle: {tracking_link}\n\n¡Gracias por confiar en nosotros!"
+    elif cambio.nuevo_estado == "No entregado":
+        mensaje = f"⚠️ No pudimos entregar tu pedido con ticket {envio['ticket']}. Intentaremos nuevamente pronto.\n\n📍 Rastrear envío: {tracking_link}"
     
     if mensaje:
         await log_whatsapp_message(
