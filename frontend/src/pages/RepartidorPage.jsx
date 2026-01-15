@@ -154,6 +154,12 @@ export default function RepartidorPage() {
     setShowModal(true);
   };
 
+  const openNoEntregadoModal = (envio) => {
+    setSelectedEnvio(envio);
+    setModalAction("no_entregado");
+    setShowModal(true);
+  };
+
   const handleImageSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
