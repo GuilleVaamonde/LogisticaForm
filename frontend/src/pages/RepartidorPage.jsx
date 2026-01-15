@@ -419,20 +419,43 @@ export default function RepartidorPage() {
                           </Button>
                         )}
                         {envio.estado === "Asignado a courier" && (
-                          <Button
-                            size="sm"
-                            onClick={() => openEntregarModal(envio)}
-                            className="rounded-sm bg-emerald-500 hover:bg-emerald-600 text-white w-full"
-                            data-testid={`entregar-btn-${envio.id}`}
-                          >
-                            <PackageCheck className="w-4 h-4 mr-2" strokeWidth={1.5} />
-                            Marcar Entregado
-                          </Button>
+                          <>
+                            <Button
+                              size="sm"
+                              onClick={() => openEntregarModal(envio)}
+                              className="rounded-sm bg-emerald-500 hover:bg-emerald-600 text-white w-full"
+                              data-testid={`entregar-btn-${envio.id}`}
+                            >
+                              <PackageCheck className="w-4 h-4 mr-2" strokeWidth={1.5} />
+                              Marcar Entregado
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => openNoEntregadoModal(envio)}
+                              className="rounded-sm border-red-300 text-red-600 hover:bg-red-50 w-full"
+                              data-testid={`no-entregar-btn-${envio.id}`}
+                            >
+                              <X className="w-4 h-4 mr-2" strokeWidth={1.5} />
+                              No Entregado
+                            </Button>
+                          </>
                         )}
                         {envio.estado === "Entregado" && (
                           <span className="text-sm text-emerald-600 font-medium text-center py-2">
                             ✓ Completado
                           </span>
+                        )}
+                        {envio.estado === "No entregado" && (
+                          <Button
+                            size="sm"
+                            onClick={() => openAsignarModal(envio)}
+                            className="rounded-sm bg-amber-500 hover:bg-amber-600 text-white w-full"
+                            data-testid={`reintentar-btn-${envio.id}`}
+                          >
+                            <Truck className="w-4 h-4 mr-2" strokeWidth={1.5} />
+                            Reintentar Entrega
+                          </Button>
                         )}
                       </div>
                     </div>
