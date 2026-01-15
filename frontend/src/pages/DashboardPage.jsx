@@ -262,7 +262,7 @@ export default function DashboardPage() {
                 )}
               </div>
               
-              <div className="p-4 md:p-6">
+              <div className="p-4 md:p-6 overflow-x-auto">
                 <EnviosTable 
                   envios={envios}
                   loading={loading}
