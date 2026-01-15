@@ -227,7 +227,14 @@ export default function RepartidorPage() {
         imagenUrl = await uploadImage();
       }
 
-      const nuevoEstado = modalAction === "asignar" ? "Asignado a courier" : "Entregado";
+      let nuevoEstado;
+      if (modalAction === "asignar") {
+        nuevoEstado = "Asignado a courier";
+      } else if (modalAction === "entregar") {
+        nuevoEstado = "Entregado";
+      } else if (modalAction === "no_entregado") {
+        nuevoEstado = "No entregado";
+      }
       
       const payload = {
         nuevo_estado: nuevoEstado,
@@ -244,9 +251,14 @@ export default function RepartidorPage() {
         e.id === selectedEnvio.id ? response.data : e
       ));
 
-      const message = modalAction === "asignar" 
-        ? "Envío asignado. Se notificará al cliente por WhatsApp."
-        : "Envío entregado. Se notificará al cliente por WhatsApp.";
+      let message;
+      if (modalAction === "asignar") {
+        message = "Envío asignado. Se notificará al cliente por WhatsApp.";
+      } else if (modalAction === "entregar") {
+        message = "Envío entregado. Se notificará al cliente por WhatsApp.";
+      } else if (modalAction === "no_entregado") {
+        message = "Envío marcado como no entregado. Se notificará al cliente.";
+      }
       
       toast.success(message);
       setShowModal(false);
