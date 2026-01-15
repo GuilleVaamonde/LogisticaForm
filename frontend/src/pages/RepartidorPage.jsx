@@ -576,20 +576,43 @@ export default function RepartidorPage() {
                               </Button>
                             )}
                             {envio.estado === "Asignado a courier" && (
-                              <Button
-                                size="sm"
-                                onClick={() => openEntregarModal(envio)}
-                                className="rounded-sm bg-emerald-500 hover:bg-emerald-600 text-white"
-                                data-testid={`entregar-btn-${envio.id}`}
-                              >
-                                <PackageCheck className="w-4 h-4 mr-1" strokeWidth={1.5} />
-                                Entregar
-                              </Button>
+                              <>
+                                <Button
+                                  size="sm"
+                                  onClick={() => openEntregarModal(envio)}
+                                  className="rounded-sm bg-emerald-500 hover:bg-emerald-600 text-white"
+                                  data-testid={`entregar-btn-${envio.id}`}
+                                >
+                                  <PackageCheck className="w-4 h-4 mr-1" strokeWidth={1.5} />
+                                  Entregar
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => openNoEntregadoModal(envio)}
+                                  className="rounded-sm border-red-300 text-red-600 hover:bg-red-50"
+                                  data-testid={`no-entregar-btn-${envio.id}`}
+                                >
+                                  <X className="w-4 h-4 mr-1" strokeWidth={1.5} />
+                                  No Entregado
+                                </Button>
+                              </>
                             )}
                             {envio.estado === "Entregado" && (
                               <span className="text-xs text-emerald-600 font-medium">
                                 ✓ Completado
                               </span>
+                            )}
+                            {envio.estado === "No entregado" && (
+                              <Button
+                                size="sm"
+                                onClick={() => openAsignarModal(envio)}
+                                className="rounded-sm bg-amber-500 hover:bg-amber-600 text-white"
+                                data-testid={`reintentar-btn-${envio.id}`}
+                              >
+                                <Truck className="w-4 h-4 mr-1" strokeWidth={1.5} />
+                                Reintentar
+                              </Button>
                             )}
                           </div>
                         </TableCell>
