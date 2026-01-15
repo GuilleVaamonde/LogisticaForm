@@ -88,8 +88,11 @@ export const EnviosTable = ({ envios, loading, onDelete, onExport, showActions =
 
   const getDeliveryImage = (envio) => {
     if (!envio.historial_estados) return null;
-    const entregado = envio.historial_estados.find(h => h.estado === "Entregado" && h.imagen_url);
-    return entregado?.imagen_url || null;
+    // Check for image in both "Entregado" and "No entregado" states
+    const conImagen = envio.historial_estados.find(h => 
+      (h.estado === "Entregado" || h.estado === "No entregado") && h.imagen_url
+    );
+    return conImagen?.imagen_url || null;
   };
 
   const getReceptorInfo = (envio) => {
@@ -100,6 +103,20 @@ export const EnviosTable = ({ envios, loading, onDelete, onExport, showActions =
         nombre: entregado.receptor_nombre,
         cedula: entregado.receptor_cedula,
         fecha: entregado.fecha
+      };
+    }
+    return null;
+  };
+
+  const getNoEntregadoInfo = (envio) => {
+    if (!envio.historial_estados) return null;
+    const noEntregado = envio.historial_estados.find(h => h.estado === "No entregado");
+    if (noEntregado) {
+      return {
+        comentario: noEntregado.comentario,
+        imagen_url: noEntregado.imagen_url,
+        fecha: noEntregado.fecha,
+        usuario_nombre: noEntregado.usuario_nombre
       };
     }
     return null;
