@@ -134,6 +134,7 @@ class EstadoHistorial(BaseModel):
     receptor_nombre: Optional[str] = None
     receptor_cedula: Optional[str] = None
     imagen_url: Optional[str] = None
+    comentario: Optional[str] = None
 
 
 class EnvioResponse(BaseModel):
