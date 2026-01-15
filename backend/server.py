@@ -614,7 +614,8 @@ async def cambiar_estado(
         "usuario_nombre": current_user["nombre"],
         "receptor_nombre": cambio.receptor_nombre,
         "receptor_cedula": cambio.receptor_cedula,
-        "imagen_url": cambio.imagen_url
+        "imagen_url": cambio.imagen_url,
+        "comentario": cambio.comentario
     }
     
     await db.envios.update_one(
