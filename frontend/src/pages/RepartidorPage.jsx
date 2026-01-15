@@ -631,7 +631,9 @@ export default function RepartidorPage() {
         <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold text-slate-900">
-              {modalAction === "asignar" ? "Confirmar Retiro" : "Confirmar Entrega"}
+              {modalAction === "asignar" && "Confirmar Retiro"}
+              {modalAction === "entregar" && "Confirmar Entrega"}
+              {modalAction === "no_entregado" && "Confirmar No Entregado"}
             </DialogTitle>
             <DialogDescription className="text-sm text-slate-500">
               {selectedEnvio && (
