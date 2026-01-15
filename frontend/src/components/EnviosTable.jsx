@@ -151,7 +151,7 @@ export const EnviosTable = ({ envios, loading, onDelete, onExport, showActions =
                 Dirección
               </TableHead>
               <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 py-3 hidden lg:table-cell">
-                Motivo
+                Creado por
               </TableHead>
               {showActions && (
                 <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 py-3 text-right">
