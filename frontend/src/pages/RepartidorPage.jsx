@@ -747,6 +747,74 @@ export default function RepartidorPage() {
                   </div>
                 </>
               )}
+
+              {modalAction === "no_entregado" && (
+                <>
+                  <p className="text-sm text-slate-600 mb-4">
+                    Indique el motivo por el cual no se pudo entregar:
+                  </p>
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5 block">
+                        Motivo / Comentario
+                      </Label>
+                      <textarea
+                        data-testid="no-entregado-comentario"
+                        value={noEntregadoComentario}
+                        onChange={(e) => setNoEntregadoComentario(e.target.value)}
+                        placeholder="Ej: No había nadie en el domicilio, dirección incorrecta, etc."
+                        rows={3}
+                        className="w-full rounded-sm border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                      />
+                    </div>
+                    
+                    {/* Image Upload Section */}
+                    <div>
+                      <Label className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5 block">
+                        Foto (opcional)
+                      </Label>
+                      
+                      {!imagePreview ? (
+                        <div 
+                          onClick={() => fileInputRef.current?.click()}
+                          className="border-2 border-dashed border-slate-200 rounded-lg p-6 text-center cursor-pointer hover:border-slate-300 transition-colors"
+                        >
+                          <Camera className="w-8 h-8 mx-auto text-slate-400 mb-2" strokeWidth={1.5} />
+                          <p className="text-sm text-slate-500">Toca para tomar foto o seleccionar</p>
+                          <p className="text-xs text-slate-400 mt-1">Máximo 5MB</p>
+                        </div>
+                      ) : (
+                        <div className="relative">
+                          <img 
+                            src={imagePreview} 
+                            alt="Preview" 
+                            className="w-full h-48 object-cover rounded-lg border border-slate-200"
+                          />
+                          <button
+                            type="button"
+                            onClick={removeImage}
+                            className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
+                      
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        onChange={handleImageSelect}
+                        className="hidden"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-sm text-slate-500 mt-2">
+                    Se notificará al cliente que no se pudo entregar su pedido.
+                  </p>
+                </>
+              )}
             </div>
           )}
 
@@ -762,7 +830,11 @@ export default function RepartidorPage() {
             <Button
               onClick={handleCambiarEstado}
               disabled={submitting || uploadingImage}
-              className={`rounded-sm w-full sm:w-auto ${modalAction === "asignar" ? 'bg-amber-500 hover:bg-amber-600' : 'bg-emerald-500 hover:bg-emerald-600'}`}
+              className={`rounded-sm w-full sm:w-auto ${
+                modalAction === "asignar" ? 'bg-amber-500 hover:bg-amber-600' : 
+                modalAction === "no_entregado" ? 'bg-red-500 hover:bg-red-600' :
+                'bg-emerald-500 hover:bg-emerald-600'
+              }`}
               data-testid="confirm-estado-btn"
             >
               {(submitting || uploadingImage) ? (
@@ -771,7 +843,11 @@ export default function RepartidorPage() {
                   {uploadingImage ? "Subiendo imagen..." : "Procesando..."}
                 </>
               ) : (
-                modalAction === "asignar" ? "Confirmar Retiro" : "Confirmar Entrega"
+                <>
+                  {modalAction === "asignar" && "Confirmar Retiro"}
+                  {modalAction === "entregar" && "Confirmar Entrega"}
+                  {modalAction === "no_entregado" && "Confirmar No Entregado"}
+                </>
               )}
             </Button>
           </DialogFooter>
