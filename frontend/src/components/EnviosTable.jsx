@@ -295,6 +295,16 @@ export const EnviosTable = ({ envios, loading, onDelete, onExport, showActions =
                 </span>
               </div>
 
+              {/* Creado por */}
+              {selectedEnvio.creado_por_nombre && (
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-slate-500">Creado por:</span>
+                  <span className="font-medium text-slate-700">{selectedEnvio.creado_por_nombre}</span>
+                  <span className="text-slate-400">•</span>
+                  <span className="text-slate-500">{selectedEnvio.motivo}</span>
+                </div>
+              )}
+
               {/* Address */}
               <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
                 <div className="flex items-start gap-3">
