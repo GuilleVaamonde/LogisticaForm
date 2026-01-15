@@ -288,7 +288,6 @@ export const EnviosTable = ({ envios, loading, onDelete, onExport, showActions =
             })}
           </TableBody>
         </Table>
-        </ScrollArea>
       </div>
 
       {/* Image/Details Modal */}
