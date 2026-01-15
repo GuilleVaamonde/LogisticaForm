@@ -365,22 +365,44 @@ export const EnviosTable = ({ envios, loading, onDelete, onExport, showActions =
                 </div>
               )}
 
-              {/* Delivery Image */}
+              {/* No Entregado Info */}
+              {getNoEntregadoInfo(selectedEnvio) && (
+                <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                  <p className="text-xs font-bold text-red-700 uppercase tracking-wider mb-2">
+                    Información de No Entrega
+                  </p>
+                  <div className="space-y-2">
+                    {getNoEntregadoInfo(selectedEnvio).comentario && (
+                      <p className="text-sm text-red-900">
+                        <span className="font-medium">Motivo:</span> {getNoEntregadoInfo(selectedEnvio).comentario}
+                      </p>
+                    )}
+                    <p className="text-sm text-red-800">
+                      <span className="font-medium">Reportado por:</span> {getNoEntregadoInfo(selectedEnvio).usuario_nombre}
+                    </p>
+                    <p className="text-xs text-red-700">
+                      {formatDate(getNoEntregadoInfo(selectedEnvio).fecha)}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Delivery/No Entregado Image */}
               {getDeliveryImage(selectedEnvio) ? (
                 <div>
                   <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                    Foto de Entrega
+                    {selectedEnvio.estado === "No entregado" ? "Foto de No Entrega" : "Foto de Entrega"}
                   </p>
                   <img 
                     src={getDeliveryImage(selectedEnvio)} 
-                    alt="Foto de entrega" 
+                    alt={selectedEnvio.estado === "No entregado" ? "Foto de no entrega" : "Foto de entrega"}
                     className="w-full h-auto max-h-80 object-contain rounded-lg border border-slate-200 bg-slate-100"
                   />
                 </div>
-              ) : selectedEnvio.estado === "Entregado" ? (
+              ) : (selectedEnvio.estado === "Entregado" || selectedEnvio.estado === "No entregado") ? (
                 <div className="text-center py-6 bg-slate-50 rounded-lg border border-slate-200">
                   <Image className="w-10 h-10 mx-auto text-slate-300 mb-2" strokeWidth={1} />
-                  <p className="text-sm text-slate-500">No hay foto de entrega</p>
+                  <p className="text-sm text-slate-500">No hay foto adjunta</p>
                 </div>
               ) : null}
 
