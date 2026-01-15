@@ -51,6 +51,7 @@ export default function RepartidorPage() {
   const [selectedEnvio, setSelectedEnvio] = useState(null);
   const [modalAction, setModalAction] = useState(null);
   const [receptorData, setReceptorData] = useState({ nombre: "", cedula: "" });
+  const [noEntregadoComentario, setNoEntregadoComentario] = useState("");
   const [submitting, setSubmitting] = useState(false);
   
   // Image upload state
