@@ -151,9 +151,8 @@ export const EnviosTable = ({ envios, loading, onDelete, onExport, showActions =
 
   return (
     <>
-      <div className="overflow-x-auto" data-testid="envios-table-container">
-        <ScrollArea className="h-[500px]">
-          <Table className="min-w-[800px]">
+      <div className="overflow-auto max-h-[500px]" data-testid="envios-table-container">
+          <Table className="min-w-[900px]">
           <TableHeader>
             <TableRow className="bg-slate-50 hover:bg-slate-50">
               <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 py-3">
