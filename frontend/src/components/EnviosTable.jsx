@@ -210,9 +210,10 @@ export const EnviosTable = ({ envios, loading, onDelete, onExport, showActions =
                     </div>
                   </TableCell>
                   <TableCell className="py-3 hidden lg:table-cell">
-                    <span className={`inline-flex items-center px-2 py-1 text-xs font-medium border rounded-sm ${getMotivoColor(envio.motivo)}`}>
-                      {envio.motivo}
-                    </span>
+                    <div>
+                      <p className="text-sm text-slate-700">{envio.creado_por_nombre || '-'}</p>
+                      <p className="text-xs text-slate-400">{envio.motivo}</p>
+                    </div>
                   </TableCell>
                   {showActions && (
                     <TableCell className="py-3 text-right">
