@@ -1,5 +1,5 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -8,9 +8,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { X } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { X, CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
-const ESTADOS = ["Ingresada", "Asignado a courier", "Entregado"];
+const ESTADOS = ["Ingresada", "Asignado a courier", "Entregado", "No entregado"];
 
 export const EnvioFilters = ({ 
   filters, 
@@ -19,8 +27,33 @@ export const EnvioFilters = ({
   onChange, 
   onClear 
 }) => {
+  const [fechaDesdeOpen, setFechaDesdeOpen] = useState(false);
+  const [fechaHastaOpen, setFechaHastaOpen] = useState(false);
+
   const handleChange = (field, value) => {
     onChange({ ...filters, [field]: value === "all" ? "" : value });
+  };
+
+  const handleDateChange = (field, date) => {
+    if (date) {
+      const isoDate = date.toISOString().split('T')[0];
+      onChange({ ...filters, [field]: isoDate });
+    } else {
+      onChange({ ...filters, [field]: "" });
+    }
+    if (field === "fecha_desde") setFechaDesdeOpen(false);
+    if (field === "fecha_hasta") setFechaHastaOpen(false);
+  };
+
+  const parseDate = (dateStr) => {
+    if (!dateStr) return undefined;
+    return new Date(dateStr + "T00:00:00");
+  };
+
+  const formatDisplayDate = (dateStr) => {
+    if (!dateStr) return "Seleccionar";
+    const date = new Date(dateStr + "T00:00:00");
+    return format(date, "dd/MM/yyyy", { locale: es });
   };
 
   const hasActiveFilters = Object.values(filters).some(v => v !== "");
@@ -91,32 +124,64 @@ export const EnvioFilters = ({
           </Select>
         </div>
 
-        {/* Fecha Desde */}
+        {/* Fecha Desde - Calendar */}
         <div>
           <Label className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5 block">
             Fecha Desde
           </Label>
-          <Input
-            type="date"
-            value={filters.fecha_desde}
-            onChange={(e) => handleChange("fecha_desde", e.target.value)}
-            className="rounded-sm bg-white"
-            data-testid="filter-fecha-desde"
-          />
+          <Popover open={fechaDesdeOpen} onOpenChange={setFechaDesdeOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full justify-start text-left font-normal rounded-sm bg-white border-slate-200"
+                data-testid="filter-fecha-desde"
+              >
+                <CalendarIcon className="mr-2 h-4 w-4 text-slate-400" />
+                <span className={filters.fecha_desde ? "text-slate-900" : "text-slate-500"}>
+                  {formatDisplayDate(filters.fecha_desde)}
+                </span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={parseDate(filters.fecha_desde)}
+                onSelect={(date) => handleDateChange("fecha_desde", date)}
+                locale={es}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
         </div>
 
-        {/* Fecha Hasta */}
+        {/* Fecha Hasta - Calendar */}
         <div>
           <Label className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5 block">
             Fecha Hasta
           </Label>
-          <Input
-            type="date"
-            value={filters.fecha_hasta}
-            onChange={(e) => handleChange("fecha_hasta", e.target.value)}
-            className="rounded-sm bg-white"
-            data-testid="filter-fecha-hasta"
-          />
+          <Popover open={fechaHastaOpen} onOpenChange={setFechaHastaOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full justify-start text-left font-normal rounded-sm bg-white border-slate-200"
+                data-testid="filter-fecha-hasta"
+              >
+                <CalendarIcon className="mr-2 h-4 w-4 text-slate-400" />
+                <span className={filters.fecha_hasta ? "text-slate-900" : "text-slate-500"}>
+                  {formatDisplayDate(filters.fecha_hasta)}
+                </span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={parseDate(filters.fecha_hasta)}
+                onSelect={(date) => handleDateChange("fecha_hasta", date)}
+                locale={es}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
