@@ -170,7 +170,7 @@ export const EnviosTable = ({ envios, loading, onDelete, onExport, showActions =
                 Creado por
               </TableHead>
               {showActions && (
-                <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 py-3 text-right">
+                <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 py-3 text-right w-[180px] min-w-[180px]">
                   Acciones
                 </TableHead>
               )}
