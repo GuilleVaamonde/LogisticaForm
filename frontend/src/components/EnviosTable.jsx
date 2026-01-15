@@ -232,7 +232,7 @@ export const EnviosTable = ({ envios, loading, onDelete, onExport, showActions =
                     </div>
                   </TableCell>
                   {showActions && (
-                    <TableCell className="py-3 text-right">
+                    <TableCell className="py-3 text-right w-[180px] min-w-[180px]">
                       <div className="flex items-center justify-end gap-1">
                         {/* View Details / Image Button */}
                         <Button
