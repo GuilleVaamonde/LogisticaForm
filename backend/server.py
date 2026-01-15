@@ -60,7 +60,7 @@ DEPARTAMENTOS_URUGUAY = [
 MOTIVOS_ENVIO = ["Entrega", "Retiro y Entrega", "Retiro"]
 
 # Estados de envío
-ESTADOS_ENVIO = ["Ingresada", "Asignado a courier", "Entregado"]
+ESTADOS_ENVIO = ["Ingresada", "Asignado a courier", "Entregado", "No entregado"]
 
 # Roles
 ROLES = ["admin", "agente", "repartidor"]
