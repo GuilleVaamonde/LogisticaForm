@@ -272,7 +272,8 @@ export const EnviosTable = ({ envios, loading, onDelete, onExport, showActions =
             })}
           </TableBody>
         </Table>
-      </ScrollArea>
+        </ScrollArea>
+      </div>
 
       {/* Image/Details Modal */}
       <Dialog open={showImageModal} onOpenChange={setShowImageModal}>
