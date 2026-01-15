@@ -33,7 +33,7 @@ JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_HOURS = 24
 
 # Frontend URL for tracking links
-FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://cliente-form.preview.emergentagent.com')
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://shiptracker-44.preview.emergentagent.com')
 
 # Create the main app
 app = FastAPI()
