@@ -226,8 +226,8 @@ export default function RepartidorPage() {
     try {
       let imagenUrl = null;
       
-      // Upload image if selected (for entregar action)
-      if (modalAction === "entregar" && selectedImage) {
+      // Upload image if selected (for entregar or no_entregado action)
+      if ((modalAction === "entregar" || modalAction === "no_entregado") && selectedImage) {
         imagenUrl = await uploadImage();
       }
 
@@ -245,6 +245,10 @@ export default function RepartidorPage() {
         ...(modalAction === "entregar" && {
           receptor_nombre: receptorData.nombre,
           receptor_cedula: receptorData.cedula,
+          imagen_url: imagenUrl
+        }),
+        ...(modalAction === "no_entregado" && {
+          comentario: noEntregadoComentario,
           imagen_url: imagenUrl
         })
       };
@@ -268,6 +272,7 @@ export default function RepartidorPage() {
       setShowModal(false);
       setSelectedEnvio(null);
       setReceptorData({ nombre: "", cedula: "" });
+      setNoEntregadoComentario("");
       setSelectedImage(null);
       setImagePreview(null);
     } catch (error) {
